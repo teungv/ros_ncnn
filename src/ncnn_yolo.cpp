@@ -10,8 +10,8 @@ int ncnnYolo::detect(const cv::Mat& bgr, std::vector<Object>& objects, uint8_t n
 
   ncnn::Mat in = ncnn::Mat::from_pixels_resize(bgr.data, ncnn::Mat::PIXEL_BGR, bgr.cols, bgr.rows, target_size, target_size);
 
-  const float mean_vals[3] = {127.5f, 127.5f, 127.5f};
-  const float norm_vals[3] = {0.007843f, 0.007843f, 0.007843f};
+  const float mean_vals[3] = {0.f, 0.f, 0.f};
+  const float norm_vals[3] = {1/255.f, 1/255.f, 1/255.f};
   in.substract_mean_normalize(mean_vals, norm_vals);
 
   ncnn::Extractor ex = neuralnet.create_extractor();
@@ -19,8 +19,18 @@ int ncnnYolo::detect(const cv::Mat& bgr, std::vector<Object>& objects, uint8_t n
 
   ex.input("data", in);
 
+  //     // List all layer names
+  // for (int i = 0; i < neuralnet.layers().size(); i++)
+  // {
+  //     const ncnn::Layer* layer = neuralnet.layers()[i];
+  //     printf("Layer %d: %s\n", i, layer->name.c_str());
+  // }
+
   ncnn::Mat out;
-  ex.extract("detection_out", out);
+//   std::cout << "I AM HERE"; 
+
+
+  ex.extract("output", out);
 
   objects.clear();
   for (int i=0; i<out.h; i++)
@@ -44,6 +54,7 @@ int ncnnYolo::detect(const cv::Mat& bgr, std::vector<Object>& objects, uint8_t n
 void ncnnYolo::draw(const cv::Mat& bgr, const std::vector<Object>& objects, double dT)
 {
     cv::Mat image = bgr.clone();
+    std::cout << objects.size();
 
     for (size_t i = 0; i < objects.size(); i++)
     {

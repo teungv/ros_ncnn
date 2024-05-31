@@ -3,7 +3,9 @@ project(ros_ncnn)
 
 add_compile_options(-std=c++11 -DUSE_AVX_INSTRUCTIONS=ON)
 
-option(GPU_SUPPORT "Enable GPU support (Vulkan)" OFF)
+option(GPU_SUPPORT "Enable GPU support (Vulkan)" ON)
+
+set(ncnn_DIR "/home/mirte/mirte_ws/src/ncnn/build-aarch64-linux-gnu/install/lib/cmake/ncnn")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -12,7 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   image_geometry
   sensor_msgs
+  std_msgs
   message_generation
+  ncnn
 )
 
 add_message_files(
@@ -37,6 +41,7 @@ catkin_package(
     image_transport
     image_geometry
     sensor_msgs
+    std_msgs
     message_generation
 )
 
