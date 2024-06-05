@@ -37,7 +37,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, int n_threads)
   image_pub.publish(cv_ptr->toImageMsg());
   ros_ncnn::ObjectArray bboxarray;
 
-
   try {
     ros::Time current_time = ros::Time::now();  
     engine.detect(cv_ptr->image, objects, n_threads); // create the objects from the model
@@ -57,15 +56,20 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg, int n_threads)
           objMsg.boundingbox.position.y = obj.rect.y;
           objMsg.boundingbox.size.x = obj.rect.width;
           objMsg.boundingbox.size.y = obj.rect.height;
+
           bboxarray.objectarray.push_back(objMsg);
+
 
           // cv::Rect rect(obj.rect.x, obj.rect.y, obj.rect.width, obj.rect.height);
           // cv::rectangle(cv_ptr->image, rect, cv::Scalar(0, 255, 0), 2);
           // cv::putText(cv_ptr->image, objMsg.label, cv::Point(obj.rect.x, obj.rect.y - 5), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
         }
     }
+
     obj_pub.publish(bboxarray);
+
     if (display_output) {
+      
       engine.draw(cv_ptr->image, objects, (current_time-last_time).toSec());
     }
     last_time = current_time;
@@ -86,6 +90,7 @@ int main(int argc, char** argv)
   nhLocal.param("gpu_device", gpu_device, 0);
   nhLocal.param("enable_gpu", enable_gpu, true);
 
+
 #ifndef GPU_SUPPORT
   ROS_WARN_STREAM(node_name << " running on CPU");
 #endif
@@ -105,6 +110,7 @@ int main(int argc, char** argv)
   ROS_INFO("Assets path: %s", path.c_str());
 
   std::string model_file, param_file;
+
   nhLocal.param("model_file", model_file, std::string("mobilenetv2_yolov3.bin"));
   nhLocal.param("param_file", param_file, std::string("mobilenetv2_yolov3.param"));
   engine.neuralnet.load_param((path+param_file).c_str());
