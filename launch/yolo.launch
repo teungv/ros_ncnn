@@ -1,14 +1,16 @@
 <launch>
 
   <arg name="display_output" default="true"/>
-  <arg name="camera_topic" default="/camera/image_raw"/>
+  <arg name="camera_topic" default="/camera/color/image_raw"/>
 
   <node name="yolo_node" pkg="ros_ncnn" type="yolo_node" output="screen">
-    <param name="model_file" value="mobilenetv2_yolov3.bin"/>
-    <param name="param_file" value="mobilenetv2_yolov3.param"/>
+    <param name="model_file" value="yolov3-tiny.bin"/>
+    <param name="param_file" value="yolov3-tiny.param"/>
     <param name="display_output" value="$(arg display_output)"/>
     <remap from="/camera/image_raw" to="$(arg camera_topic)"/>
     <param name="probability_threshold" value="0.7"/>
+    <param name="enable_gpu" value="true"/>
+
   </node>
 
 </launch>
